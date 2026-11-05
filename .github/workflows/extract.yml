@@ -16,8 +16,8 @@ jobs:
 
       - name: Extract ZIP into repository root
         run: |
-          unzip -o bot-full (25).zip -d .
-          rm bot-full (25).zip
+          unzip -o grace.zip -d .
+          rm grace.zip
 
       - name: Commit extracted files
         run: |
