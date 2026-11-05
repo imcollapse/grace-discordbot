@@ -1,0 +1,40 @@
+# grace · your own Postgres, next to the bot. No monthly limits, no cold starts.
+#   create .env next to this file with: POSTGRES_PASSWORD=choose-a-long-password
+#   docker compose -f docker-compose.postgres.yml up -d
+# Bot setting:  DATABASE_URL=postgres://grace:<password>@127.0.0.1:5432/grace   (SSL turns itself off for local addresses)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: grace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: grace
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: grace
+    ports:
+      - "127.0.0.1:5432:5432"          # only this machine can reach it
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -c
+      - max_connections=60
+      - -c
+      - shared_buffers=256MB           # raise to 25% of RAM on bigger machines
+      - -c
+      - effective_cache_size=768MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - checkpoint_completion_target=0.9
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grace -d grace"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

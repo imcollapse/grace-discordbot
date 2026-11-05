@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+src/logs/
+src/.command_hash
+tempassets/
+backups/
+*.log
+*.dump
+.DS_Store
